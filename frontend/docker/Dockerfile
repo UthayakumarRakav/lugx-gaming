@@ -1,16 +1,10 @@
-# Stage 1: Build
-FROM node:18 as build
-WORKDIR /app
-COPY . .
-RUN if [ -f package.json ]; then npm install && npm run build; fi
-
-# Stage 2: Serve
+# Use Nginx to serve static content
 FROM nginx:alpine
 
-# Copy build output from stage 1 — adjust if your build output is in /app/build or /app/dist
+# Copy HTML template to Nginx web root
 COPY templatemo_589_lugx_gaming/ /usr/share/nginx/html
 
-# Copy nginx config from context
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Use custom nginx config if needed
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
