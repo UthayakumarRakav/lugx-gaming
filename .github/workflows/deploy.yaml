@@ -79,7 +79,10 @@ jobs:
       run: |
         curl -LO "https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl"
         chmod +x kubectl
-        sudo mv kubectl /usr/local/bin/    
+        mkdir -p $HOME/bin
+        mv kubectl $HOME/bin/
+        echo "$HOME/bin" >> $GITHUB_PATH
+
     - name: Configure kubeconfig
       run: |
         mkdir -p ~/.kube
