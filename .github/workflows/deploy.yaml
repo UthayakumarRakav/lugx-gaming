@@ -70,11 +70,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'v1.24.0'
-    
+#    - name: Install kubectl
+#      uses: azure/setup-kubectl@v3
+#      with:
+#        version: 'v1.24.0'
+
+    - name: Install kubectl manually
+      run: |
+        curl -LO "https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/    
     - name: Configure kubeconfig
       run: |
         mkdir -p ~/.kube
