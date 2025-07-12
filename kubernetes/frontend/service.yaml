@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lugx-frontend-service
+  namespace: lugx-gaming
+spec:
+  selector:
+    app: lugx-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-service
+  namespace: lugx-gaming
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: game-service
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: game-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: game-service
+        image: rakavan/game-service:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_HOST
+          value: "game-db-service"
+        - name: DB_NAME
+          value: "game_db"
+        - name: DB_USER
+          value: "game_user"
+        - name: DB_PASSWORD
+          value: "game_password"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5

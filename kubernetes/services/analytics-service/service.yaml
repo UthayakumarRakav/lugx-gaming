@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-service
+  namespace: lugx-gaming
+spec:
+  selector:
+    app: analytics-service
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
