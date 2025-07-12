@@ -31,7 +31,7 @@ jobs:
     
     # Build and push frontend
     - name: Build and push frontend
-      working-directory: frontend
+      working-directory: frontend/docker
       run: |
         docker build -t ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} .
         docker push ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
