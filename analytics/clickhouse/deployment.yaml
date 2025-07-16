@@ -25,6 +25,9 @@ spec:
         volumeMounts:
         - name: clickhouse-data
           mountPath: /var/lib/clickhouse
+#        - name: clickhouse-users
+#          mountPath: /etc/clickhouse-server/users.xml
+#          subPath: users.xml
         resources:
           requests:
             cpu: "500m"
@@ -32,11 +35,12 @@ spec:
           limits:
             cpu: "2"
             memory: "4Gi"
+#      volumes:
+#      - name: clickhouse-users
+#        configMap:
+#          name: clickhouse-users-xml
   volumeClaimTemplates:
   - metadata:
       name: clickhouse-data
     spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi
+      accessMod

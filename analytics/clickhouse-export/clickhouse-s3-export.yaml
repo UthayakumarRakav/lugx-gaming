@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clickhouse-s3-export
+  namespace: lugx-gaming
+spec:
+  schedule: "*/5 * * * *" # Every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: clickhouse-s3-export
+            image: clickhouse/clickhouse-client:latest
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: secret-key
+            - name: S3_BUCKET
+              value: "lugx-gaming-analytics"
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Export page views
+              clickhouse-client --host clickhouse --query "
+                SELECT * FROM page_views 
+                WHERE timestamp >= now() - INTERVAL 5 MINUTE
+                FORMAT Parquet
+              " | aws s3 cp - s3://$S3_BUCKET/page_views/$(date +\%Y-\%m-\%d)/page_views_$(date +\%H\%M\%S).parquet
+              
+              # Export clicks
+              clickhouse-client --host clickhouse --query "
+                SELECT * FROM clicks 
+                WHERE timestamp >= now() - INTERVAL 5 MINUTE
+                FORMAT Parquet
+              " | aws s3 cp - s3://$S3_BUCKET/clicks/$(date +\%Y-\%m-\%d)/clicks_$(date +\%H\%M\%S).parquet
+              
+              # Export sessions
+              clickhouse-client --host clickhouse --query "
+                SELECT * FROM sessions 
+                WHERE end_time >= now() - INTERVAL 5 MINUTE
+                FORMAT Parquet
+              " | aws s3 cp - s3://$S3_BUCKET/sessions/$(date +\%Y-\%m-\%d)/sessions_$(date +\%H\%M\%S).parquet
+          restartPolicy: OnFailure

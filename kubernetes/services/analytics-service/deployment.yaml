@@ -30,6 +30,16 @@ spec:
         env:
         - name: CLICKHOUSE_HOST
           value: "http://clickhouse:8123"
+        - name: CLICKHOUSE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse-secret
+              key: username
+        - name: CLICKHOUSE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse-secret
+              key: password
         resources:
           requests:
             cpu: "100m"
